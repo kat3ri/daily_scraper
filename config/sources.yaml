@@ -1,0 +1,43 @@
+# Data sources configuration
+
+reddit:
+  enabled: true
+  subreddits:
+    - MachineLearning
+    - artificial
+    - LocalLLaMA
+    - StableDiffusion
+    - ArtificialIntelligence
+    - learnmachinelearning
+  sort_by: hot  # hot, new, top
+  limit: 50
+
+huggingface:
+  enabled: true
+  endpoints:
+    - models
+    - datasets
+    - spaces
+  sort_by: trending  # trending, recent, most-likes
+
+github:
+  enabled: true
+  topics:
+    - machine-learning
+    - artificial-intelligence
+    - deep-learning
+    - llm
+    - transformers
+    - stable-diffusion
+  language: python  # Filter by primary language (optional)
+  since: daily  # daily, weekly, monthly
+
+twitter:
+  enabled: false  # Set to true if you have API access
+  accounts:
+    - _akhaliq
+    - ylecun
+    - karpathy
+    - AndrewYNg
+    - goodfeli
+  max_tweets: 20

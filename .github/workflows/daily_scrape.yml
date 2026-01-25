@@ -1,0 +1,101 @@
+name: Daily AI News Scraper
+
+on:
+  # Run daily at 8 AM UTC
+  schedule:
+    - cron: '0 8 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  scrape-and-send:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Install and set up Ollama
+        run: |
+          # Install Ollama
+          curl -fsSL https://ollama.com/install.sh | sh
+          
+          # Start Ollama in background
+          ollama serve &
+          
+          # Wait for Ollama to be ready
+          sleep 5
+          
+          # Pull the model
+          ollama pull ${{ secrets.OLLAMA_MODEL || 'mistral:7b' }}
+      
+      - name: Create config file
+        run: |
+          # Copy example config if config.yaml doesn't exist
+          if [ ! -f config/config.yaml ]; then
+            cp config/config.yaml.example config/config.yaml
+          fi
+      
+      - name: Run scraper
+        env:
+          # Reddit credentials
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USER_AGENT: ${{ secrets.REDDIT_USER_AGENT }}
+          
+          # GitHub token
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          
+          # Twitter (optional)
+          TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
+          
+          # Email configuration
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          
+          # Ollama configuration
+          OLLAMA_HOST: http://localhost:11434
+          OLLAMA_MODEL: ${{ secrets.OLLAMA_MODEL || 'mistral:7b' }}
+          
+          # Logging
+          LOG_LEVEL: INFO
+        run: |
+          python src/main.py
+      
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: scraper-logs
+          path: logs/
+          retention-days: 7
+      
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Scraper failed! Check the logs for details."
+          # You could add additional notification logic here
+          # For example, send an email or Slack message
