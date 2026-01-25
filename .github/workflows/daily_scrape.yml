@@ -12,6 +12,10 @@ jobs:
   scrape-and-send:
     runs-on: ubuntu-latest
     
+    # Set minimal permissions for security
+    permissions:
+      contents: read
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
