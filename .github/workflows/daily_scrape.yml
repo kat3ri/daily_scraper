@@ -42,8 +42,16 @@ jobs:
           # Start Ollama in background
           ollama serve &
           
-          # Wait for Ollama to be ready
-          sleep 5
+          # Wait for Ollama to be ready with health check
+          echo "Waiting for Ollama to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
+              echo "Ollama is ready!"
+              break
+            fi
+            echo "Attempt $i/30: Ollama not ready yet, waiting..."
+            sleep 2
+          done
           
           # Pull the model
           ollama pull ${{ secrets.OLLAMA_MODEL || 'mistral:7b' }}

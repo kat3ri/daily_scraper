@@ -36,7 +36,8 @@ class LLMAnalyzer:
         """Test connection to Ollama."""
         try:
             # Try to list models to verify connection
-            ollama.list()
+            client = ollama.Client(host=self.host)
+            client.list()
             logger.info(f"Successfully connected to Ollama at {self.host}")
             logger.info(f"Using model: {self.model}")
             return True
@@ -106,7 +107,8 @@ class LLMAnalyzer:
         )
         
         try:
-            response = ollama.chat(
+            client = ollama.Client(host=self.host)
+            response = client.chat(
                 model=self.model,
                 messages=[
                     {
@@ -182,7 +184,8 @@ class LLMAnalyzer:
         prompt = DIGEST_SUMMARY_PROMPT.format(top_items=items_text)
         
         try:
-            response = ollama.chat(
+            client = ollama.Client(host=self.host)
+            response = client.chat(
                 model=self.model,
                 messages=[
                     {

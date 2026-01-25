@@ -4,7 +4,7 @@ import sys
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 import yaml
 from dotenv import load_dotenv
 
@@ -66,7 +66,7 @@ def load_sources_config() -> Dict:
         return yaml.safe_load(f)
 
 
-def scrape_all_sources(sources_config: Dict, config: Dict) -> List[Dict]:
+def scrape_all_sources(sources_config: Dict, config: Dict) -> Tuple[List[Dict], List[Tuple[str, str]]]:
     """
     Scrape all configured data sources.
     
@@ -75,7 +75,7 @@ def scrape_all_sources(sources_config: Dict, config: Dict) -> List[Dict]:
         config: General configuration
         
     Returns:
-        List of all scraped items
+        Tuple of (list of all scraped items, list of (source, error) tuples)
     """
     all_items = []
     errors = []

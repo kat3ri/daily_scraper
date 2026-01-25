@@ -50,12 +50,15 @@ def demo_llm_analysis():
     
     items = get_sample_data()
     
-    # Simulate LLM scoring
-    simulated_scores = [8, 9, 7, 8, 7, 6, 8]
+    # Simulate LLM scoring dynamically based on item count
+    import random
+    random.seed(42)  # For consistent demo results
     
     print(f"\n✓ Analyzed {len(items)} items with simulated LLM scoring:")
     
-    for i, (item, score) in enumerate(zip(items, simulated_scores), 1):
+    for i, item in enumerate(items, 1):
+        # Generate score between 6-9 for demo
+        score = random.randint(6, 9)
         item['llm_score'] = score
         item['llm_analysis'] = {
             'score': score,
