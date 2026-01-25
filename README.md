@@ -132,9 +132,19 @@ github:
     # Add more topics...
 ```
 
-### 6. Run Locally
+### 6. Try the Demo (Optional)
 
-Test the scraper:
+Want to see how it works without setting up credentials? Run the demo:
+
+```bash
+python test_demo.py
+```
+
+This shows the workflow with sample data and simulated LLM analysis.
+
+### 7. Run Locally
+
+Test the scraper with real data:
 
 ```bash
 python src/main.py
@@ -262,6 +272,16 @@ OLLAMA_MODEL=mixtral:8x7b  # Larger, more capable
 Available models: [ollama.ai/library](https://ollama.ai/library)
 
 ## 🧪 Testing
+
+### Demo Mode (No Credentials Required)
+
+Try the demo to see how the system works:
+
+```bash
+python test_demo.py
+```
+
+This uses sample data from `src/test_data.py` and simulates the complete workflow.
 
 ### Test Mode
 
