@@ -1,0 +1,24 @@
+# Daily AI News Scraper Configuration
+
+# Scraping settings
+scraping:
+  max_items_per_source: 50
+  min_score_threshold: 10  # Minimum upvotes/stars for content
+  time_range: 24  # Hours to look back
+
+# LLM Analysis settings
+llm:
+  temperature: 0.3
+  max_tokens: 500
+  top_items_to_analyze: 100
+  final_digest_size: 15  # Number of items in final email
+
+# Email settings
+email:
+  subject_prefix: "[AI Daily Digest]"
+  include_plain_text: true
+  
+# Logging
+logging:
+  level: INFO
+  file: logs/scraper.log
