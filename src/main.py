@@ -45,13 +45,16 @@ def load_config() -> Dict:
     # Try example file if config doesn't exist
     if not config_path.exists():
         config_path = Path(__file__).parent.parent / 'config' / 'config.yaml.example'
+        logging.info(f"Using example config file: {config_path}")
     
     if not config_path.exists():
         logging.warning("No configuration file found, using defaults")
         return {}
     
     with open(config_path) as f:
-        return yaml.safe_load(f)
+        config = yaml.safe_load(f)
+        logging.info(f"Loaded configuration from {config_path}")
+        return config if config else {}
 
 
 def load_sources_config() -> Dict:
@@ -193,9 +196,25 @@ def analyze_with_llm(items: List[Dict], config: Dict) -> List[Dict]:
         model=os.getenv('OLLAMA_MODEL', 'mistral:7b')
     )
     
+    # Limit items to analyze based on configuration
+    max_items_to_analyze = llm_config.get('top_items_to_analyze', 100)
+    
+    # Sort items by engagement metrics before limiting
+    # Higher scores/engagement should be analyzed first
+    sorted_items = sorted(
+        items,
+        key=lambda x: x.get('score', 0) + x.get('num_comments', 0) + x.get('stars', 0),
+        reverse=True
+    )
+    
+    items_to_analyze = sorted_items[:max_items_to_analyze]
+    
+    if len(items) > max_items_to_analyze:
+        logging.info(f"Limiting analysis to top {max_items_to_analyze} items (out of {len(items)} total)")
+    
     # Analyze items
     analyzed = analyzer.analyze_items(
-        items,
+        items_to_analyze,
         temperature=llm_config.get('temperature', 0.3),
         max_tokens=llm_config.get('max_tokens', 500)
     )
