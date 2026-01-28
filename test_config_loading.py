@@ -8,15 +8,12 @@ Tests:
 3. time_range is properly passed to scrapers
 """
 import sys
-import tempfile
-import yaml
 from pathlib import Path
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / 'src'))
 
-from main import load_config, analyze_with_llm
-from test_data import get_sample_data
+from main import load_config
 
 
 def test_config_loading():
